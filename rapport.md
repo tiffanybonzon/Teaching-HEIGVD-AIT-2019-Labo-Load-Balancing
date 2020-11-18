@@ -56,11 +56,6 @@ And below again, you can see the sequence diagram updated to show the situation.
 
 ![](img/diagSeq2.png)
 
-<<<<<<< HEAD
-=======
-
-
->>>>>>> d41abb3caf7ba0ca6645a78d8ca66b7472b86e0f
 ### Task 2: Sticky sessions
 
 ##### 1. There is different way to implement the sticky session. One possibility  is to use the SERVERID provided by HAProxy. Another way is to use the NODESESSID provided by the application. Briefly explain the difference  between both approaches (provide a sequence diagram with cookies to show the difference).
@@ -71,16 +66,9 @@ We do prefer using the ID at the server level and will go on with an implementat
 
 ![](img/diagSeq3.png)
 
-<<<<<<< HEAD
 This time, compared to the first diagram of task#1, the proxy sets the `SERVERID` cookie, and redirects the requests accordingly. A second browser would have its requests redirected to S2 (as seen in the diagram below).
 
 ##### 2. Provide the modified `haproxy.cfg` file with a short explanation of the modifications you did to enable sticky session management.
-=======
-
-
-##### 2. Provide the modified `haproxy.cfg` file with a short explanation of the modifications you did to enable sticky session management SERVERID
->>>>>>> d41abb3caf7ba0ca6645a78d8ca66b7472b86e0f
-
 We declare a cookie based on [this documentation](https://cbonte.github.io/haproxy-dconv/2.2/configuration.html#4.2-cookie) and we add the cookie keyword to the server declarations based on [this documentation](https://cbonte.github.io/haproxy-dconv/2.2/configuration.html#5.2-cookie).
 
 ```bash
@@ -126,7 +114,6 @@ We modified the number of threads to be 2.
 
 The first thread was directed toward Server A, the second thread was directed toward Server B thanks to the round robin load balancing, then every request made by each of the threads was sent to the same server as the first they made, thanks to the session stickiness.
 
-<<<<<<< HEAD
 ![](img/jmeter4.png) 
 =======
 ### Task 3: Drain mode
