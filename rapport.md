@@ -251,7 +251,7 @@ We can see that S1 handles 2 times more requests that S2.
 - With cookies
   - The requests are evenly distributed and servers have the same throughput. As cookies are conserved, the load balancer always sends requests from the same thread to the same server. Here the weights have no effects.
 - Without cookies
-  - As configures, S1 will receive 2 times more requests that S2. As cookies are not conserved, a session is created at each request.
+  - As configured, S1 will receive 2 times more requests that S2. As cookies are not conserved, a session is created at each request.
 
 ### Task 5: Balancing strategies
 
