@@ -64,7 +64,7 @@ The difference is that an application level session ID might not be understood b
 
 We do prefer using the ID at the server level and will go on with an implementation of the `SERVERID` load balancing.
 
-// todo : seq
+![](img/diagSeq3.png)
 
 
 
