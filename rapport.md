@@ -32,7 +32,7 @@ The load balancer should implement *sticky sessions*, a mechanism that allows th
 
 ##### 3. Provide a sequence diagram to explain what is happening when one requests the URL for the first time and then refreshes the page. We want to see what is happening with the cookie. We want to see the sequence of messages exchanged (1) between the browser and HAProxy and (2) between HAProxy and the nodes S1 and S2.
 
-
+![](img/diagSeq1.png)
 
 ##### 4. Provide a screenshot of the summary report from JMeter.
 
@@ -50,7 +50,7 @@ You can see the report of the results below, the result is obvious, every reques
 
 And below again, you can see the sequence diagram updated to show the situation.
 
-
+![](img/diagSeq2.png)
 
 
 
