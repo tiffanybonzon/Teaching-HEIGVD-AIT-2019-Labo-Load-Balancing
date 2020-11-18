@@ -54,11 +54,9 @@ And below again, you can see the sequence diagram updated to show the situation.
 
 
 
-### 
-
 ### Task 2: Sticky sessions
 
-##### 1. There is different way to implement the sticky session. One possibility  is to use the SERVERID provided by HAProxy. Another way is to use the  NODESESSID provided by the application. Briefly explain the difference  between both approaches (provide a sequence diagram with cookies to show the difference).
+##### 1. There is different way to implement the sticky session. One possibility  is to use the SERVERID provided by HAProxy. Another way is to use the NODESESSID provided by the application. Briefly explain the difference  between both approaches (provide a sequence diagram with cookies to show the difference).
 
 The difference is that an application level session ID might not be understood by the load balancer, and that there could be multiple services on a server that don't share the same ID but should be considered as a whole.
 
@@ -68,11 +66,7 @@ We do prefer using the ID at the server level and will go on with an implementat
 
 
 
-
-
-
-
-##### 2. Provide the modified `haproxy.cfg` file with a short explanation of the modifications you did to enable sticky session management.
+##### 2. Provide the modified `haproxy.cfg` file with a short explanation of the modifications you did to enable sticky session management SERVERID
 
 We declare a cookie based on [this documentation](https://cbonte.github.io/haproxy-dconv/2.2/configuration.html#4.2-cookie) and we add the cookie keyword to the server declarations based on [this documentation](https://cbonte.github.io/haproxy-dconv/2.2/configuration.html#5.2-cookie).
 
@@ -117,6 +111,49 @@ The first thread was directed toward Server A, the second thread was directed to
 
 
 
-### 
-
 ### Task 3: Drain mode
+
+We did verify our access to the stats panel by going to `http://192.168.42.42:1936/`
+
+![](img/stats.png)
+
+##### 1. Take a screenshot of the Step 5 and tell us which node is answering.
+
+The screenshot is available above, we can see that the server `s2` answered our latest query.
+
+##### 2. Based on your previous answer, set the node in DRAIN mode. Take a screenshot of the HAProxy state page.
+
+We did set the corresponding server in drain mode, you can see the commands as well as the state from the proxy panel in the screenshots below.
+
+ ![](img/drain.png)
+
+
+
+![](img/stats2.png)
+
+##### 3. Refresh your browser and explain what is happening. Tell us if you stay on the same node or not. If yes, why? If no, why?
+
+Yes, we did stay on the same node, it was the expected behavior since we were already on an established communication with the node. The new traffic, however, will be directed towards the other servers.
+
+##### 4 + 5. Open another browser and open `http://192.168.42.42`. What is happening ? Clear the cookies on the new browser and repeat these two steps multiple times. What is happening? Are you reaching the node in DRAIN mode?
+
+We opened another browser and it connected to `s1` as expected. We did refresh the page a few times after clearing the cookie and also connected from private navigation, every test resulted the same way, a connection was established to `s1`. It means the new traffic can't reach `s2` from the load balancer, as expected.
+
+##### 6. Reset the node in READY mode. Repeat the three previous steps and explain what is happening. Provide a screenshot of HAProxy's stats page.
+
+First we set the server back with `set server nodes/s2 state ready` then we proceeded to the same tests as before, this time every time we established a new connection without a cookie we were redirected toward a new server. Below is the screenshots from the stats panel.
+
+![](img/stats3.png)
+
+##### 7. Finally, set the node in MAINT mode. Redo the three same steps and explain what is happening. Provide a screenshot of HAProxy's stats page.
+
+We set the server using the same command as above, then tried every step from the previous tests and we couldn't reach a connection with the server `s2`. Then we tried to refresh the page from our original browser (that contains a cookie refering to `s2`) and were connected to `s1` with a new cookie.
+
+Below is a screenshot of the stats from the proxy panel.
+
+![](img/stats4.png)
+
+At the end of this step we restored the server to its ready state.
+
+
+
