@@ -95,7 +95,7 @@ What we implemented now is the second cookie, `SERVERID`, this cookie is created
 
 ##### 4. Provide a sequence diagram to explain what is happening when one requests the URL for the first time and then refreshes the page. We want to see what is happening with the cookie. We want to see the sequence of messages exchanged (1) between the browser and HAProxy and (2) between HAProxy and the nodes S1 and S2. We also want to see what is happening when a second browser is used.
 
-
+![](img/diagSeq4.png)
 
 ##### 5. Provide a screenshot of JMeter's summary report. Is there a difference with this run and the run of Task 1?
 
