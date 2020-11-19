@@ -1,8 +1,9 @@
-# AIT - Rapport de laboratoire - Load balancing
+# AIT - Lab Report - Load balancing
 
 by Bonzon Tiffany, Scherer Laurent & Thoeny Laurent
 
-
+### Introduction
+In this lab, we will see different configurations for HAProxy. First we will examine a classic round-robin with no sticky sessions, then we will add sticky sessions so that a client with an open session will always make its requests on the same server. Later on, we will experiment with the DRAIN and MAINT modes, with delay on our servers and finally we will try two different configuration modes for the proxy: first and leastconn
 
 ### Task 1: Install the tools
 
@@ -256,7 +257,7 @@ We can see that S1 handles 2 times more requests that S2 even with the 250ms del
 
 ##### 1. Briefly explain the strategies you have chosen and why you have chosen them.
 
-We did choose to compare the strategies `leastconn` and `first` with the `roundrobin` we have already used, our choice is mainly because the two strategies can be seen as "opposites" to each other and have realistic use cases.
+We did choose to compare the strategies `leastconn` and `first` with the `roundrobin` we have already used, our choice is mainly because the two strategies can be seen as "opposites" to each other and have realistic use cases. We do give further details on the strategies in our comparison below.
 
 ##### 2. Provide evidence that you have played with the two strategies (configuration done, screenshots, ...)
 
@@ -316,7 +317,7 @@ As we expected, the results are way more balanced this way, exactly 50% when the
 
 We can verify that by accessing our browser and accessing the page `http://192.168.42.42/` multiples times with cookies disabled, we can see that we're bouncing between our servers.
 
-Finally here is a screenshot of the stats page from this config, we you can see the load balancer kept track of the number of sessions established.
+Finally here is a screenshot of the stats page from this config, where you can see the load balancer kept track of the number of sessions established.
 
 ![](img/stats6.png)
 
@@ -332,3 +333,8 @@ On the other hand, the `leastConn` strategy will take advantage of every server 
 
 We don't think any of those two strategies would fit the lab better than the `roundrobin`policy who was used, mostly because the sessions were especially shorts during the tests and examples while the two strategies aforementioned are better for longer ones. However it's important to know about such possibilities when you're about to decide on a load balancer implementation.
 
+### Conclusion
+
+In this lab we have taken a look at load balancing, understood the session stickiness trough implementation and compared a few strategies that can be used while setting up load balancing. Running the tests allowed us to get a better understanding of every of those strategies as well as the different behaviors when we change the state of a node.
+
+The two strategies we did study in the last ask allowed us to see different use cases for load balancing and allow us to take proper decisions if we have to implement load balancing for longer sessions later on. 
