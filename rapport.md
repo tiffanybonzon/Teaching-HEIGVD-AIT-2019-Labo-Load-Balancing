@@ -232,13 +232,11 @@ After modifying the config and rebuilding the images, we can add the delay to bo
 ```bash
 $ curl -H "Content-Type: application/json" -X POST -d '{"delay": 250}' http://192.168.42.11:3000/delay
 {"message":"New timeout of 250ms configured."}
-$ curl -H "Content-Type: application/json" -X POST -d '{"delay": 250}' http://192.168.42.22:3000/delay
-{"message":"New timeout of 250ms configured."}
 ```
 
 ![](img/t4q5_JMeter.png)
 
-We can see that both servers have the same throughput (around 300ms per request)
+We can see that with cookies and a 250ms delay on S1, weights have virtually no effects
 
 ##### 6. Now, what happens when the cookies are cleared between each request and the delay is set to 250ms? We expect just one or two sentence to summarize your observations of the behavior with/without cookies.
 
@@ -246,12 +244,13 @@ For that, we go into JMeter > HTTP Cookie Manager, and check the `Clear cookies 
 
 ![](img/t4ClearCookies.png)
 
-We can see that S1 handles 2 times more requests that S2.
+We can see that S1 handles 2 times more requests that S2 even with the 250ms delay.
 
-- With cookies
-  - The requests are evenly distributed and servers have the same throughput. As cookies are conserved, the load balancer always sends requests from the same thread to the same server. Here the weights have no effects.
-- Without cookies
-  - As configured, S1 will receive 2 times more requests that S2. As cookies are not conserved, a session is created at each request.
+- Summary:
+  - With cookies
+    - As cookies are conserved, the load balancer always sends requests from the same thread to the same server. Here the weights have no effects.
+  - Without cookies
+    - As configured, S1 will receive 2 times more requests that S2. So S2 will be "slowed" due to its lower weight with the round-robin policy
 
 ### Task 5: Balancing strategies
 
