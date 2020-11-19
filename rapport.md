@@ -256,12 +256,79 @@ We can see that S1 handles 2 times more requests that S2 even with the 250ms del
 
 ##### 1. Briefly explain the strategies you have chosen and why you have chosen them.
 
-TODO
+We did choose to compare the strategies `leastconn` and `first` with the `roundrobin` we have already used, our choice is mainly because the two strategies can be seen as "opposites" to each other and have realistic use cases.
 
 ##### 2. Provide evidence that you have played with the two strategies (configuration done, screenshots, ...)
 
-TODO
+First, we did modify our configuration to implement the `first` policy.
+
+```bash
+# Set the strategy
+balance first
+
+# We keep the sticky session options
+cookie SERVERID insert indirect nocache
+
+# maxconn parameter was added for both server
+server s1 ${WEBAPP_1_IP}:3000 check cookie s1 maxconn 9
+server s2 ${WEBAPP_2_IP}:3000 check cookie s2 maxconn 9
+```
+
+Then we used JMeter, we set 10 threads to connect 100 times and asked it to clear cookie at each iteration.
+
+![](img/jmeter5.png)
+
+As expected, most of the connections were send to the first server, but around 5% of them were sent to the second one, this happened every time our 10th thread sent a request when the first 9 were already connected.
+
+We then made the same test but without asking JMeter to clear the cookie at each iteration.
+
+![](img/jmeter6.png)
+
+This time, as we expected, we can see that the first 9 threads sent 100 request to our first server and stayed connected, therefore the 10th thread connected to our second server and sent its 100 requests to him.
+
+![](img/stats5.png)
+
+On the screenshot above, you can see that our statistics page shows us the session limit was indeed fixed at 9 for both our nodes.
+
+
+
+Now moving on to the second policy, `leastconn`.
+
+```bash
+# Set the strategy
+balance leastconn
+
+# We keep the sticky session options
+cookie SERVERID insert indirect nocache
+
+# maxconn parameter was added for both server
+server s1 ${WEBAPP_1_IP}:3000 check cookie s1
+server s2 ${WEBAPP_2_IP}:3000 check cookie s2
+```
+
+We will run the same JMeter tests as above, 10 users and 100 threads, first while clearing the cookies, then without it.
+
+![](img/jmeter7.png)
+
+![](img/jmeter8.png)
+
+As we expected, the results are way more balanced this way, exactly 50% when the session is preserved through cookies and a little difference above, probably because 13 more connections were established while one more was still active on the other server. The second screenshot shows that `roundrobin` is correctly implemented when the number of connections is the same on all the servers.
+
+We can verify that by accessing our browser and accessing the page `http://192.168.42.42/` multiples times with cookies disabled, we can see that we're bouncing between our servers.
+
+Finally here is a screenshot of the stats page from this config, we you can see the load balancer kept track of the number of sessions established.
+
+![](img/stats6.png)
+
+This conclude our analysis of both strategies, our conclusions can be read in the point below.
 
 ##### 3. Compare the two strategies and conclude which is the best for this lab (not necessary the best at all).
 
-TODO
+It's interesting to see that the two strategies have radically different goals and applications, the `first` strategy will put every connection on the first server of the poll until said server has reached it's maximum number of allowed connections, then move onto the second server, etc ... 
+
+This strategy allows to exploit every server to the maximum of its capacity and to adapt the size of the server cluster/poll according to the number of the connections. If you have 10 servers with 1000 max connections during peak hours but a maximum of 1500 connections (during the night, for example) then you could turn off / re-purpose 8 of the servers. It is useful if you have tool that automate the size of your server poll based on the servers activity. This configuration fits better with long sessions (RDP and IMAP are quoted as examples in the documentation)
+
+On the other hand, the `leastConn` strategy will take advantage of every server available to its capacity by always assigning a new connection to the less busy server of the poll (`roundrobin` is used when they are equal), this allows the load to be equally distributed among our servers. This policy is better when used with very long sessions (LDAP and SQL are among the examples quoted in the documentation)  
+
+We don't think any of those two strategies would fit the lab better than the `roundrobin`policy who was used, mostly because the sessions were especially shorts during the tests and examples while the two strategies aforementioned are better for longer ones. However it's important to know about such possibilities when you're about to decide on a load balancer implementation.
+
